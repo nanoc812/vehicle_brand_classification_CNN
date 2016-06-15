@@ -1,3 +1,5 @@
 # vehicle_brand_classification_CNN
 
-THis is  program in my DL class.
+A program to classify vehicle brands using a CNN based on Keras lib.
+
+
