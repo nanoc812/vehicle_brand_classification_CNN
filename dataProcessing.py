@@ -6,7 +6,7 @@ Created on Sun Jun 12 14:06:46 2016
 """
 
 from logoSet import imgPreprocess
-from confir import path
+from config import path
 
 ###############################################################################
 ### prepare the logo dataset

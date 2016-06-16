@@ -16,7 +16,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import np_utils
 
 from logoSet import loadLogoSet #loadModelSet, loadFaceAssSet, 
-from confir import path
+from config import path
 
 batch_size = 100
 nb_classes = 223
