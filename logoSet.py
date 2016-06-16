@@ -7,13 +7,13 @@ Created on Sat Jun 11 01:20:48 2016
 
 
 import numpy as np
-import cv2, cv, glob, string
+import cv2, glob, string
 import os, random
 
 
-def loadLogoSet(path, rows,cols):
+def loadLogoSet(path, rows,cols,test_data_rate=0.15):
     random.seed(612)
-    _, imgID = readItems(path +'data.txt')
+    _, imgID = readItems('data.txt')
     y, _ = modelDict(path)
     nPics =  len(y)
     faceassset = np.zeros((nPics,rows,cols), dtype = np.uint8) ### gray images
@@ -29,7 +29,7 @@ def loadLogoSet(path, rows,cols):
             faceassset[i,:,:] = temp
     y = np.delete(y, noImg,0); faceassset = np.delete(faceassset, noImg, 0)
     nPics = len(y)
-    index = random.sample(np.arange(nPics), int(nPics*0.15))
+    index = random.sample(np.arange(nPics), int(nPics*test_data_rate))
     x_test = faceassset[index,:,:]; x_train = np.delete(faceassset, index, 0)
     y_test = y[index]; y_train = np.delete(y, index, 0)
     return (x_train, y_train), (x_test, y_test)
@@ -78,7 +78,8 @@ def imgSeg_contour(img, b,g,r, per):
     upper = np.array([b,g,r])
     shapeMask = cv2.inRange(img, lower, upper)
 
-    cnts, _ = cv2.findContours(shapeMask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    #http://stackoverflow.com/questions/27746089/python-computer-vision-contours-too-many-values-to-unpack
+    _, cnts, hierarchy = cv2.findContours(shapeMask.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     cnts = sorted(cnts, key = cv2.contourArea, reverse = True)[:4]
     
     for c in cnts:
@@ -89,7 +90,7 @@ def imgSeg_contour(img, b,g,r, per):
     return approx
 
 def modelDict(path):
-    vmc, imgID = readItems(path +'data.txt')
+    vmc, imgID = readItems('data.txt')
     nPics =  len(vmc[:,1])
     model_dict = {}
     count = int(0);
@@ -122,19 +123,21 @@ def imgPreprocess(img_dir):
     myfiles = glob.glob(img_dir+'*.jpg')
     
     temp = img_dir.split('/')
-    newDir = '/'.join(temp[:(len(temp)-2)])     
-    os.mkdir(newDir+'/logo/')
+    newDir = '/'.join(temp[:(len(temp)-2)])
+    if not os.path.exists(newDir+'/logo/'):
+        os.mkdir(newDir+'/logo/')
     
     for filepath in myfiles:
         img = cv2.imread(filepath)
         logo = imgSeg(img)
         sd = filepath.rfind('/'); ed = filepath.find('.'); filename = filepath[int(sd+1):int(ed)]
         cv2.imwrite(newDir+'/logo/'+filename+'.jpg',logo)
+        print("car logo segmentation success,%s"%filename)
 
 def imgResize(img, n_rows, n_cols, flag = 1):
     h,w,_ = img.shape
     if flag == 0: ### turn the colorful imput into a gray image
-        img = cv2.cvtColor(img, cv.CV_BGR2GRAY)
+        img = cv2.cvtColor(img, cv2.CV_BGR2GRAY)
     #print h, w
     if w < h:
         #newIMG = img[(h-w):,:]
