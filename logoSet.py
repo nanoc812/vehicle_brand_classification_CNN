@@ -119,19 +119,19 @@ def readItems(data_dir):
         cmv[i,:] = [temp[0],temp[1],temp[3]]
     return cmv, imgID
 
-def imgPreprocess(img_dir):
+def imgPreprocess(img_dir, foldername):
     myfiles = glob.glob(img_dir+'*.jpg')
     
     temp = img_dir.split('/')
     newDir = '/'.join(temp[:(len(temp)-2)])
-    if not os.path.exists(newDir+'/logo/'):
-        os.mkdir(newDir+'/logo/')
+    if not os.path.exists(newDir+'/'+foldername+'/'):
+        os.mkdir(newDir+'/'+foldername+'/')
     
     for filepath in myfiles:
         img = cv2.imread(filepath)
         logo = imgSeg(img)
         sd = filepath.rfind('/'); ed = filepath.find('.'); filename = filepath[int(sd+1):int(ed)]
-        cv2.imwrite(newDir+'/logo/'+filename+'.jpg',logo)
+        cv2.imwrite(newDir+'/'+foldername+'/'+filename+'.jpg',logo)
         print("car logo segmentation success,%s"%filename)
 
 def imgResize(img, n_rows, n_cols, flag = 1):
