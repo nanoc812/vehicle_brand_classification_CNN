@@ -116,3 +116,7 @@ else:
                         samples_per_epoch=X_train.shape[0],
                         nb_epoch=nb_epoch,
                         validation_data=(X_test, Y_test))
+
+json_string = model.to_json()
+open(path+'logo_architecture.json', 'w').write(json_string)
+model.save_weights(path+'logo_weights.h5')
