@@ -12,13 +12,14 @@ from anaData import modelDict
 
 def logoPredictor(path, rows, cols):
     model = model_from_json(open(path+'logo_architecture.json').read())
-    model.load_weights(path+'logo_weiths.h5')
+    model.load_weights(path+'logo_weights.h5')
     model.compile(optimizer = 'adam', loss='categorical_crossentropy',metrics=['accuracy'])
     
     imgs = loadImgs(path+'logo_test/', rows, cols)
+    imgs = imgs.reshape(imgs.shape[0], 1, rows, cols)
     
     classes = model.predict(imgs)
-    _, model_Dict = modelDict()
+    _, model_Dict = modelDict(path)
     output = []
     for cls in classes:
         output.append(model_Dict.keys()[model_Dict.values().index(cls)])
@@ -26,7 +27,7 @@ def logoPredictor(path, rows, cols):
     return output #A Numpy array of predictions
 
 def loadImgs(imgsfolder, rows, cols):
-    myfiles = glob.glob(imgsfolder+'*.jpg')
+    myfiles = glob.glob(imgsfolder+'*.jpg', 0)
     nPics = len(myfiles)
     X = np.zeros((nPics, rows, cols), dtype = 'uint8')
     i = 0;
