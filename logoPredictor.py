@@ -29,11 +29,11 @@ def logoPredictor(path, rows, cols):
     imgs, imgNames = loadImgs(path+'logo_test/', rows, cols)
     imgs = imgs.reshape(imgs.shape[0], 1, rows, cols)
     
-    classes = model.predict(imgs)
+    classes = model.predict_classes(imgs)
     _, model_Dict = modelDict(path)
     output = []
     for cls in classes:
-        output.append(model_Dict.keys()[model_Dict.values().index(cls)])
+        output.append(model_Dict.keys()[model_Dict.values().index(int(cls))])
         
     return output #A Numpy array of predictions
 
