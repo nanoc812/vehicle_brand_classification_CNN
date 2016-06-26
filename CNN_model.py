@@ -15,6 +15,8 @@ from keras.layers import Convolution2D, MaxPooling2D
 from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import np_utils
 
+import h5py
+
 from logoSet import loadLogoSet #loadModelSet, loadFaceAssSet, 
 from config import path
 
