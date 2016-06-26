@@ -11,6 +11,16 @@ from logoSet import modelDict
 from config import path
 import h5py
 
+def saveList(data1, data2, filepath):
+    ndata1 = len(data1); ndata2 = len(data2);
+    if ndata1 != ndata2: 
+        print 'ERROR'
+    else:
+        fw = open(filepath, 'w')
+        for i in range(ndata1):
+            fw.write(data1[i]+' '+str(data2[i])+'\n')
+        fw.close
+
 def logoPredictor(path, rows, cols):
     model = model_from_json(open(path+'logo_architecture.json').read())
     model.load_weights(path+'logo_weights.h5')
