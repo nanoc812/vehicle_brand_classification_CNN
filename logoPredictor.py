@@ -7,15 +7,16 @@ Created on Fri Jun 24 21:54:51 2016
 import glob, cv2
 import numpy as np
 from keras.models import model_from_json
-from anaData import modelDict
-
+from logoSet import modelDict
+from config import path
+import h5py
 
 def logoPredictor(path, rows, cols):
     model = model_from_json(open(path+'logo_architecture.json').read())
     model.load_weights(path+'logo_weights.h5')
     model.compile(optimizer = 'adam', loss='categorical_crossentropy',metrics=['accuracy'])
     
-    imgs = loadImgs(path+'logo_test/', rows, cols)
+    imgs, imgNames = loadImgs(path+'logo_test/', rows, cols)
     imgs = imgs.reshape(imgs.shape[0], 1, rows, cols)
     
     classes = model.predict(imgs)
@@ -30,8 +31,11 @@ def loadImgs(imgsfolder, rows, cols):
     myfiles = glob.glob(imgsfolder+'*.jpg', 0)
     nPics = len(myfiles)
     X = np.zeros((nPics, rows, cols), dtype = 'uint8')
-    i = 0;
+    i = 0; imgNames = []
     for filepath in myfiles:
+        sd = filepath.rfind('/'); ed = filepath.find('.'); filename = filepath[int(sd+1):int(ed)]
+        imgNames.append(filename)  
+        
         temp = cv2.imread(filepath, 0)
         if temp == None:
             continue
@@ -42,4 +46,8 @@ def loadImgs(imgsfolder, rows, cols):
         else:
             X[i,:,:] = cv2.resize(temp,(cols, rows), interpolation = cv2.INTER_CUBIC)
         i += 1
-    return X
+    return X, imgNames
+    
+if __name__ == "__main__":
+    modelIDs, imgNames = logoPredictor(path, 78, 78)
+    saveList(imgNames, modelIDs, path+'/val_modelIDs.txt')
